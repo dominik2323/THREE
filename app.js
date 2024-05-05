@@ -5,7 +5,6 @@ import fragment from "./shader/fragment.glsl";
 import vertex from "./shader/vertex.glsl";
 import * as dat from "dat.gui";
 
-
 import { TimelineMax } from "gsap";
 let OrbitControls = require("three-orbit-controls")(THREE);
 
@@ -18,7 +17,7 @@ export default class Sketch {
     this.height = window.innerHeight;
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(this.width, this.height);
-    this.renderer.setClearColor(0xeeeeee, 1);
+    this.renderer.setClearColor(0x000, 1);
 
     this.container = document.getElementById("container");
     this.width = this.container.offsetWidth;
@@ -35,17 +34,14 @@ export default class Sketch {
     // var frustumSize = 10;
     // var aspect = window.innerWidth / window.innerHeight;
     // this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
-    this.camera.position.set(0, 0, 2);
+    this.camera.position.set(0, 0, 1);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.time = 0;
 
     this.paused = false;
 
-
-
     this.setupResize();
 
-    
     this.addObjects();
     this.resize();
     this.render();
@@ -70,24 +66,23 @@ export default class Sketch {
     this.height = this.container.offsetHeight;
     this.renderer.setSize(this.width, this.height);
     this.camera.aspect = this.width / this.height;
-    
 
     // image cover
-    this.imageAspect = 853/1280;
-    let a1; let a2;
-    if(this.height/this.width>this.imageAspect) {
-      a1 = (this.width/this.height) * this.imageAspect ;
+    this.imageAspect = 853 / 1280;
+    let a1;
+    let a2;
+    if (this.height / this.width > this.imageAspect) {
+      a1 = (this.width / this.height) * this.imageAspect;
       a2 = 1;
-    } else{
+    } else {
       a1 = 1;
-      a2 = (this.height/this.width) / this.imageAspect;
+      a2 = this.height / this.width / this.imageAspect;
     }
 
     this.material.uniforms.resolution.value.x = this.width;
     this.material.uniforms.resolution.value.y = this.height;
     this.material.uniforms.resolution.value.z = a1;
     this.material.uniforms.resolution.value.w = a2;
-
 
     // optional - cover with quad
     // const dist  = this.camera.position.z;
@@ -103,31 +98,29 @@ export default class Sketch {
     // }
 
     this.camera.updateProjectionMatrix();
-
-
   }
 
   addObjects() {
     let that = this;
     this.material = new THREE.ShaderMaterial({
       extensions: {
-        derivatives: "#extension GL_OES_standard_derivatives : enable"
+        derivatives: "#extension GL_OES_standard_derivatives : enable",
       },
       side: THREE.DoubleSide,
       uniforms: {
         time: { type: "f", value: 0 },
         resolution: { type: "v4", value: new THREE.Vector4() },
         uvRate1: {
-          value: new THREE.Vector2(1, 1)
-        }
+          value: new THREE.Vector2(1, 1),
+        },
       },
       // wireframe: true,
       // transparent: true,
       vertexShader: vertex,
-      fragmentShader: fragment
+      fragmentShader: fragment,
     });
 
-    this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
+    this.geometry = new THREE.PlaneGeometry(1, 1, 500, 500);
 
     this.plane = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.plane);
