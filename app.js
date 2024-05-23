@@ -5,7 +5,6 @@ import fragment from "./shader/fragment.glsl";
 import vertex from "./shader/vertex.glsl";
 import * as dat from "dat.gui";
 
-
 import { TimelineMax } from "gsap";
 let OrbitControls = require("three-orbit-controls")(THREE);
 
@@ -41,11 +40,8 @@ export default class Sketch {
 
     this.paused = false;
 
-
-
     this.setupResize();
 
-    
     this.addObjects();
     this.resize();
     this.render();
@@ -70,24 +66,23 @@ export default class Sketch {
     this.height = this.container.offsetHeight;
     this.renderer.setSize(this.width, this.height);
     this.camera.aspect = this.width / this.height;
-    
 
     // image cover
-    this.imageAspect = 853/1280;
-    let a1; let a2;
-    if(this.height/this.width>this.imageAspect) {
-      a1 = (this.width/this.height) * this.imageAspect ;
+    this.imageAspect = 853 / 1280;
+    let a1;
+    let a2;
+    if (this.height / this.width > this.imageAspect) {
+      a1 = (this.width / this.height) * this.imageAspect;
       a2 = 1;
-    } else{
+    } else {
       a1 = 1;
-      a2 = (this.height/this.width) / this.imageAspect;
+      a2 = this.height / this.width / this.imageAspect;
     }
 
     this.material.uniforms.resolution.value.x = this.width;
     this.material.uniforms.resolution.value.y = this.height;
     this.material.uniforms.resolution.value.z = a1;
     this.material.uniforms.resolution.value.w = a2;
-
 
     // optional - cover with quad
     // const dist  = this.camera.position.z;
@@ -103,28 +98,26 @@ export default class Sketch {
     // }
 
     this.camera.updateProjectionMatrix();
-
-
   }
 
   addObjects() {
     let that = this;
     this.material = new THREE.ShaderMaterial({
       extensions: {
-        derivatives: "#extension GL_OES_standard_derivatives : enable"
+        derivatives: "#extension GL_OES_standard_derivatives : enable",
       },
       side: THREE.DoubleSide,
       uniforms: {
         time: { type: "f", value: 0 },
         resolution: { type: "v4", value: new THREE.Vector4() },
         uvRate1: {
-          value: new THREE.Vector2(1, 1)
-        }
+          value: new THREE.Vector2(1, 1),
+        },
       },
       // wireframe: true,
       // transparent: true,
       vertexShader: vertex,
-      fragmentShader: fragment
+      fragmentShader: fragment,
     });
 
     this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
